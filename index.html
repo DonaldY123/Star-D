@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>Star-D AI 獲利中控台</title>
-    <!-- 1. 先引入核心資源 -->
+    
+    <!-- 【修正點】必須使用正確的 .css 與 .js 檔案路徑 -->
     <link rel="stylesheet" href="https://pyscript.net" />
     <script type="module" src="https://pyscript.net"></script>
     
-    <!-- 2. 設定 Python 環境 -->
     <py-config>
         packages = ["yfinance", "pandas"]
     </py-config>
@@ -51,15 +51,15 @@
 
 <div id="log-area">>> 系統初始化中... 首次運行需下載 yfinance 模組 (約 10-20 秒)，請稍候。</div>
 
-<!-- 3. Python 邏輯區 -->
 <script type="py">
     import yfinance as yf
     from pyscript import document
     from datetime import datetime
 
-    # 初始化狀態切換
-    document.querySelector("#status-tag").innerText = "● Python 引擎已就緒"
-    document.querySelector("#status-tag").style.color = "#10b981"
+    # 引擎啟動後切換燈號
+    status_tag = document.querySelector("#status-tag")
+    status_tag.innerText = "● Python 引擎已就緒"
+    status_tag.style.color = "#10b981"
 
     def write_log(msg, color="white"):
         log_div = document.querySelector("#log-area")
@@ -68,7 +68,7 @@
 
     async def analyze_stock(event):
         ticker = document.querySelector("#stock-id").value.upper()
-        write_log(f"正在連線數據源抓取 {ticker}...", "#38bdf8")
+        write_log(f"正在抓取 {ticker} 即時數據...", "#38bdf8")
         try:
             s = yf.Ticker(ticker)
             d = s.history(period="1d")
