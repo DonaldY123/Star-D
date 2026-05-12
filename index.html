@@ -2,47 +2,100 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Star-D Python 網頁</title>
-    <!-- 引入 PyScript 資源，讓瀏覽器懂 Python -->
+    <title>AI 獲利中控台 | Star-D</title>
     <link rel="stylesheet" href="https://pyscript.net" />
     <script type="module" src="https://pyscript.net"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 90%; }
-        h1 { color: #333; margin-bottom: 1.5rem; }
-        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 1rem; transition: 0.3s; }
-        button:hover { background: #0056b3; }
-        #output { margin-top: 20px; padding: 10px; border-top: 1px solid #eee; color: #555; line-height: 1.5; min-height: 50px; }
+        :root { --gold: #ffd700; --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; }
+        body { font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; background: var(--bg); color: #f8fafc; margin: 0; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 20px; margin-bottom: 30px; }
+        .profit-badge { background: #065f46; color: #34d399; padding: 5px 15px; border-radius: 20px; font-weight: bold; border: 1px solid #059669; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: var(--card); border: 1px solid #334155; padding: 25px; border-radius: 15px; position: relative; }
+        .card h2 { color: var(--gold); margin-top: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
+        .input-group { margin: 15px 0; }
+        input { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #475569; background: #0f172a; color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: var(--accent); color: #0f172a; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; margin-top: 10px; }
+        button:hover { filter: brightness(1.2); }
+        #log-area { background: #000; color: #10b981; padding: 15px; border-radius: 10px; margin-top: 20px; font-family: monospace; font-size: 0.9rem; height: 120px; overflow-y: auto; border: 1px solid #334155; }
     </style>
 </head>
 <body>
 
+<div class="header">
+    <div>
+        <h1 style="margin:0;">💰 Star-D AI 獲利工作流</h1>
+        <p style="color: #94a3b8; margin: 5px 0 0 0;">自動化運營入口 v1.0</p>
+    </div>
+    <div class="profit-badge">預估今日收益: $<span id="daily-profit">0.00</span></div>
+</div>
+
+<div class="grid">
+    <!-- AI 短影音工作流 -->
     <div class="card">
-        <h1>Star-D 控制面板</h1>
-        <p>測試 Python 在網頁執行的效能</p>
-        
-        <!-- py-click 屬性直接呼叫下面的 Python 函數 -->
-        <button id="run-btn" py-click="hello_python">點我執行 Python</button>
-        
-        <div id="output">等待指令中...</div>
+        <h2>🎬 AI 短影音矩陣</h2>
+        <div class="input-group">
+            <label>主題關鍵字：</label>
+            <input type="text" id="video-topic" placeholder="例如：財富自由、AI趨勢">
+        </div>
+        <button py-click="generate_video_plan">產生腳本 & 排程</button>
     </div>
 
-    <!-- 這裡是 Python 邏輯區 -->
-    <script type="py">
-        from datetime import datetime
-        import sys
+    <!-- AI 股市分析 -->
+    <div class="card">
+        <h2>📈 股市 AI 策略監控</h2>
+        <div class="input-group">
+            <label>標的代码 (Ticker)：</label>
+            <input type="text" id="stock-id" value="NVDA">
+        </div>
+        <button py-click="analyze_stock">執行 AI 趨勢分析</button>
+    </div>
 
-        def hello_python(event):
-            # 取得當前時間
-            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            # 取得 Python 版本資訊
-            py_version = sys.version.split()[0]
-            
-            message = f"✅ Python 執行成功！<br>時間：{now}<br>運行版本：{py_version}"
-            
-            # 使用 PyScript 的 display 函數將結果印到網頁上
-            display(message, target="output", append=False)
-    </script>
+    <!-- 收益計算 (Python 邏輯) -->
+    <div class="card">
+        <h2>📊 收益模擬計算 (Python)</h2>
+        <div class="input-group">
+            <label>流量/點閱數：</label>
+            <input type="number" id="views" value="10000">
+        </div>
+        <button py-click="calc_income">計算預估分潤</button>
+    </div>
+</div>
+
+<div id="log-area">>> 系統就緒，請選擇工作流啟動...</div>
+
+<script type="py">
+    from pyscript import document
+    import random
+
+    def write_log(msg):
+        log_div = document.querySelector("#log-area")
+        log_div.innerHTML = f"> {msg}<br>" + log_div.innerHTML
+
+    def generate_video_plan(event):
+        topic = document.querySelector("#video-topic").value
+        if not topic:
+            write_log("❌ 請輸入主題關鍵字")
+            return
+        write_log(f"🚀 正在為『{topic}』生成 AI 腳本...")
+        write_log("✅ 腳本已完成：已傳送至剪映/CapCut 自動化隊列")
+
+    def analyze_stock(event):
+        stock = document.querySelector("#stock-id").value
+        write_log(f"🔍 正在抓取 {stock} 即時數據...")
+        # 模擬 AI 分析邏輯
+        trends = ["看漲 🚀", "盤整 ➡️", "回調 📉"]
+        res = random.choice(trends)
+        write_log(f"🤖 AI 分析結果 ({stock})：建議 {res}")
+
+    def calc_income(event):
+        views = float(document.querySelector("#views").value)
+        # 假設每萬次點閱 50 美金的 Python 算法
+        income = (views / 10000) * 50
+        document.querySelector("#daily-profit").innerText = f"{income:,.2f}"
+        write_log(f"💵 根據 {views} 流量計算，預計收益 ${income}")
+
+</script>
 
 </body>
 </html>
