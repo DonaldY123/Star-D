@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <title>Star-D AI 獲利中控台</title>
     
-    <!-- 使用最穩定的官方路徑，請確認這兩行貼上後沒有被截斷 -->
     <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css" />
     <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
 
@@ -12,48 +11,95 @@
         :root { --gold: #ffd700; --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; }
         body { font-family: sans-serif; background: var(--bg); color: #f8fafc; margin: 0; padding: 20px; text-align: center; }
         .header { border-bottom: 1px solid #334155; padding-bottom: 20px; margin-bottom: 30px; }
-        .card { background: var(--card); border: 1px solid #334155; padding: 25px; border-radius: 15px; display: inline-block; width: 350px; }
+        
+        /* 讓卡片可以並排顯示 */
+        .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+        .card { background: var(--card); border: 1px solid #334155; padding: 25px; border-radius: 15px; width: 350px; text-align: left; }
+        .card h2 { text-align: center; color: var(--gold); font-size: 1.2rem; }
+        
         input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #475569; background: #0f172a; color: white; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: var(--accent); color: #0f172a; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; }
-        #status-tag { margin-bottom: 10px; font-weight: bold; transition: 0.5s; }
-        #log-area { background: #000; color: #10b981; padding: 15px; border-radius: 10px; margin-top: 20px; font-family: monospace; text-align: left; min-height: 100px; }
+        button { width: 100%; padding: 12px; background: var(--accent); color: #0f172a; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; margin-top: 5px; }
+        button:hover { filter: brightness(1.1); }
+        
+        #status-tag { margin-bottom: 10px; font-weight: bold; transition: 0.5s; text-align: center; }
+        #log-area { background: #000; color: #10b981; padding: 15px; border-radius: 10px; margin: 20px auto; font-family: monospace; text-align: left; width: 90%; max-width: 720px; min-height: 150px; white-space: pre-wrap; }
     </style>
 </head>
 <body>
 
 <div class="header">
     <h1>💰 Star-D AI 獲利中控台</h1>
-    <div id="status-tag" style="color: #facc15;">● 引擎啟動中，請稍候...</div>
+    <div id="status-tag" style="color: #facc15;">● 引擎啟動中...</div>
 </div>
 
-<div class="card">
-    <h2>📈 股市數據模擬分析</h2>
-    <input type="text" id="stock-id" value="NVDA">
-    <button id="run-btn" py-click="analyze_stock">執行分析</button>
-    <div id="log-area">>> 系統就緒</div>
+<div class="container">
+    <!-- 卡片 1：股市分析 -->
+    <div class="card">
+        <h2>📈 股市模擬分析</h2>
+        <label>標的代碼：</label>
+        <input type="text" id="stock-id" value="NVDA">
+        <button py-click="analyze_stock">執行 AI 分析</button>
+    </div>
+
+    <!-- 卡片 2：短影音腳本 (新增) -->
+    <div class="card">
+        <h2>🎬 短影音腳本生成</h2>
+        <label>影片主題：</label>
+        <input type="text" id="video-topic" placeholder="例如：AI 賺錢秘辛">
+        <button py-click="generate_script">生成爆款腳本</button>
+    </div>
 </div>
+
+<div id="log-area">>> 系統就緒，等待指令...</div>
 
 <script type="py">
     from pyscript import document
     from datetime import datetime
     import random
 
-    # 當你看到這行執行，代表 Python 引擎活過來了！
+    # 引擎就緒狀態
     status_tag = document.querySelector("#status-tag")
     status_tag.innerText = "● Python 引擎已就緒 (綠燈)"
     status_tag.style.color = "#10b981"
 
-    def write_log(msg):
+    def write_log(msg, color="#10b981"):
         log_area = document.querySelector("#log-area")
         time_str = datetime.now().strftime("%H:%M:%S")
-        log_area.innerHTML = f"<div>[{time_str}] {msg}</div>" + log_area.innerHTML
+        # 加上顏色區分
+        log_area.innerHTML = f"<div style='color:{color}'>[{time_str}] {msg}</div>" + log_area.innerHTML
 
+    # 股市邏輯
     def analyze_stock(event):
         ticker = document.querySelector("#stock-id").value.upper()
-        write_log(f"正在模擬分析 {ticker} ...")
+        write_log(f"正在分析 {ticker} ...", "#38bdf8")
         price = random.uniform(500, 1000)
-        write_log(f"📊 {ticker} 預估現價: ${price:.2f}")
-        write_log(f"✅ AI 邏輯運行正常！")
+        write_log(f"📊 {ticker} 預估現價: ${price:.2f}", "#ffd700")
+        write_log(f"✅ AI 趨勢預測完成")
+
+    # 腳本邏輯 (新增)
+    def generate_script(event):
+        topic = document.querySelector("#video-topic").value
+        if not topic:
+            write_log("⚠️ 請先輸入影片主題！", "#e94560")
+            return
+        
+        write_log(f"🧠 AI 正在構思『{topic}』的爆款腳本...", "#38bdf8")
+        
+        # 腳本模板邏輯
+        hooks = ["你絕對不知道的", "三招教你搞定", "為什麼聰明人都在看"]
+        hook = random.choice(hooks)
+        
+        script = f"""【AI 腳本生成成功】
+主題：{topic}
+------------------------------
+1. 開頭 (0-3s)：{hook}{topic}！
+2. 痛點 (3-15s)：你是不是也覺得處理{topic}很麻煩？那是因為你沒找對方法。
+3. 乾貨 (15-45s)：這是我測試出的 AI 自動化流程，效率直接提升 10 倍。
+4. 行動 (45-60s)：想知道完整 Prompt？在底下留言『我要領取』，我發給你！
+------------------------------"""
+        
+        write_log(script, "#ffffff")
+
 </script>
 
 </body>
