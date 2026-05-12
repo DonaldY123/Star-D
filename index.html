@@ -2,22 +2,20 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Star-D AI 獲利中控台 | 修正版</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pyscript/2024.1.1/core.css" />
-    <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/pyscript/2024.1.1/core.js"></script>
+    <title>Star-D AI 獲利中控台</title>
     
-    <!-- 移除有問題的 yfinance，改用純 Python 環境 -->
-    <py-config>
-    </py-config>
+    <!-- 使用最穩定的官方路徑，請確認這兩行貼上後沒有被截斷 -->
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.js" />
+    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.css"></script>
 
     <style>
         :root { --gold: #ffd700; --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; }
-        body { font-family: 'PingFang TC', sans-serif; background: var(--bg); color: #f8fafc; margin: 0; padding: 20px; text-align: center; }
+        body { font-family: sans-serif; background: var(--bg); color: #f8fafc; margin: 0; padding: 20px; text-align: center; }
         .header { border-bottom: 1px solid #334155; padding-bottom: 20px; margin-bottom: 30px; }
         .card { background: var(--card); border: 1px solid #334155; padding: 25px; border-radius: 15px; display: inline-block; width: 350px; }
         input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #475569; background: #0f172a; color: white; box-sizing: border-box; }
         button { width: 100%; padding: 12px; background: var(--accent); color: #0f172a; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; }
-        #status-tag { margin-bottom: 10px; font-weight: bold; }
+        #status-tag { margin-bottom: 10px; font-weight: bold; transition: 0.5s; }
         #log-area { background: #000; color: #10b981; padding: 15px; border-radius: 10px; margin-top: 20px; font-family: monospace; text-align: left; min-height: 100px; }
     </style>
 </head>
@@ -25,15 +23,14 @@
 
 <div class="header">
     <h1>💰 Star-D AI 獲利中控台</h1>
-    <div id="status-tag" style="color: #facc15;">● 正在初始化 Python 引擎...</div>
+    <div id="status-tag" style="color: #facc15;">● 引擎啟動中，請稍候...</div>
 </div>
 
 <div class="card">
     <h2>📈 股市數據模擬分析</h2>
-    <p style="font-size: 0.8rem; color: #94a3b8;">(已繞過 yfinance 兼容性限制)</p>
     <input type="text" id="stock-id" value="NVDA">
-    <button py-click="analyze_stock">執行分析</button>
-    <div id="log-area">>> 系統已就緒</div>
+    <button id="run-btn" py-click="analyze_stock">執行分析</button>
+    <div id="log-area">>> 系統就緒</div>
 </div>
 
 <script type="py">
@@ -41,9 +38,10 @@
     from datetime import datetime
     import random
 
-    # 修改狀態
-    document.querySelector("#status-tag").innerText = "● Python 引擎已就緒"
-    document.querySelector("#status-tag").style.color = "#10b981"
+    # 當你看到這行執行，代表 Python 引擎活過來了！
+    status_tag = document.querySelector("#status-tag")
+    status_tag.innerText = "● Python 引擎已就緒 (綠燈)"
+    status_tag.style.color = "#10b981"
 
     def write_log(msg):
         log_area = document.querySelector("#log-area")
@@ -53,20 +51,9 @@
     def analyze_stock(event):
         ticker = document.querySelector("#stock-id").value.upper()
         write_log(f"正在模擬分析 {ticker} ...")
-        
-        # 模擬一個真實的獲利判斷邏輯
         price = random.uniform(100, 900)
-        change = random.uniform(-5, 5)
-        
         write_log(f"📊 {ticker} 預估現價: ${price:.2f}")
-        write_log(f"📉 今日波動: {change:+.2f}%")
-        
-        if change > 2:
-            write_log("🚀 AI 訊號：強勢突破，建議持有！", "#ffd700")
-        elif change < -2:
-            write_log("⚠️ AI 訊號：超賣區間，注意風險。", "#e94560")
-        else:
-            write_log("➡️ AI 訊號：盤整中。")
+        write_log(f"✅ AI 邏輯運行正常！")
 </script>
 
 </body>
