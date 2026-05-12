@@ -51,7 +51,7 @@
     def analyze_stock(event):
         ticker = document.querySelector("#stock-id").value.upper()
         write_log(f"正在模擬分析 {ticker} ...")
-        price = random.uniform(100, 900)
+        price = random.uniform(500, 1000)
         write_log(f"📊 {ticker} 預估現價: ${price:.2f}")
         write_log(f"✅ AI 邏輯運行正常！")
 </script>
