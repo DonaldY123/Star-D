@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Star-D Python 網頁</title>
+    <!-- 引入 PyScript 資源，讓瀏覽器懂 Python -->
+    <link rel="stylesheet" href="https://pyscript.net" />
+    <script type="module" src="https://pyscript.net"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 90%; }
+        h1 { color: #333; margin-bottom: 1.5rem; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 1rem; transition: 0.3s; }
+        button:hover { background: #0056b3; }
+        #output { margin-top: 20px; padding: 10px; border-top: 1px solid #eee; color: #555; line-height: 1.5; min-height: 50px; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>Star-D 控制面板</h1>
+        <p>測試 Python 在網頁執行的效能</p>
+        
+        <!-- py-click 屬性直接呼叫下面的 Python 函數 -->
+        <button id="run-btn" py-click="hello_python">點我執行 Python</button>
+        
+        <div id="output">等待指令中...</div>
+    </div>
+
+    <!-- 這裡是 Python 邏輯區 -->
+    <script type="py">
+        from datetime import datetime
+        import sys
+
+        def hello_python(event):
+            # 取得當前時間
+            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            # 取得 Python 版本資訊
+            py_version = sys.version.split()[0]
+            
+            message = f"✅ Python 執行成功！<br>時間：{now}<br>運行版本：{py_version}"
+            
+            # 使用 PyScript 的 display 函數將結果印到網頁上
+            display(message, target="output", append=False)
+    </script>
+
+</body>
+</html>
