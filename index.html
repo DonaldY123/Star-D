@@ -2,98 +2,110 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>AI 獲利中控台 | Star-D</title>
+    <title>Star-D AI 獲利中控台 | 強化版</title>
+    <!-- 引入 PyScript -->
     <link rel="stylesheet" href="https://pyscript.net" />
     <script type="module" src="https://pyscript.net"></script>
+    
+    <!-- 關鍵：載入 Python 套件 -->
+    <py-config>
+        packages = ["yfinance", "pandas"]
+    </py-config>
+
     <style>
         :root { --gold: #ffd700; --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; }
-        body { font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; background: var(--bg); color: #f8fafc; margin: 0; padding: 20px; }
+        body { font-family: 'PingFang TC', sans-serif; background: var(--bg); color: #f8fafc; margin: 0; padding: 20px; }
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 20px; margin-bottom: 30px; }
-        .profit-badge { background: #065f46; color: #34d399; padding: 5px 15px; border-radius: 20px; font-weight: bold; border: 1px solid #059669; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .card { background: var(--card); border: 1px solid #334155; padding: 25px; border-radius: 15px; position: relative; }
-        .card h2 { color: var(--gold); margin-top: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
-        .input-group { margin: 15px 0; }
-        input { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #475569; background: #0f172a; color: white; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: var(--accent); color: #0f172a; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; margin-top: 10px; }
-        button:hover { filter: brightness(1.2); }
-        #log-area { background: #000; color: #10b981; padding: 15px; border-radius: 10px; margin-top: 20px; font-family: monospace; font-size: 0.9rem; height: 120px; overflow-y: auto; border: 1px solid #334155; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .card { background: var(--card); border: 1px solid #334155; padding: 20px; border-radius: 15px; }
+        .card h2 { color: var(--gold); font-size: 1.1rem; margin-top: 0; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #475569; background: #0f172a; color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: var(--accent); color: #0f172a; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; }
+        #log-area { background: #000; color: #10b981; padding: 15px; border-radius: 10px; margin-top: 20px; font-family: monospace; height: 200px; overflow-y: auto; border: 1px solid #334155; white-space: pre-wrap; }
+        .loading-msg { color: #facc15; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div>
-        <h1 style="margin:0;">💰 Star-D AI 獲利工作流</h1>
-        <p style="color: #94a3b8; margin: 5px 0 0 0;">自動化運營入口 v1.0</p>
+    <h1>💰 Star-D AI 獲利中控台</h1>
+    <div style="text-align: right;">
+        <span id="status-tag" style="color: #10b981;">● Python 引擎已就緒</span>
     </div>
-    <div class="profit-badge">預估今日收益: $<span id="daily-profit">0.00</span></div>
 </div>
 
 <div class="grid">
-    <!-- AI 短影音工作流 -->
+    <!-- 1. 真實股市分析 -->
     <div class="card">
-        <h2>🎬 AI 短影音矩陣</h2>
-        <div class="input-group">
-            <label>主題關鍵字：</label>
-            <input type="text" id="video-topic" placeholder="例如：財富自由、AI趨勢">
-        </div>
-        <button py-click="generate_video_plan">產生腳本 & 排程</button>
+        <h2>📈 即時股市 AI 數據</h2>
+        <input type="text" id="stock-id" value="NVDA" placeholder="輸入美股代碼，如 TSLA">
+        <button py-click="analyze_stock">抓取數據並分析</button>
     </div>
 
-    <!-- AI 股市分析 -->
+    <!-- 2. AI 短影音腳本生成 -->
     <div class="card">
-        <h2>📈 股市 AI 策略監控</h2>
-        <div class="input-group">
-            <label>標的代码 (Ticker)：</label>
-            <input type="text" id="stock-id" value="NVDA">
-        </div>
-        <button py-click="analyze_stock">執行 AI 趨勢分析</button>
+        <h2>🎬 AI 短影音文案生成</h2>
+        <input type="text" id="video-topic" placeholder="輸入影片主題...">
+        <button py-click="generate_script">生成 60 秒腳本</button>
     </div>
 
-    <!-- 收益計算 (Python 邏輯) -->
+    <!-- 3. 獲利模型 -->
     <div class="card">
-        <h2>📊 收益模擬計算 (Python)</h2>
-        <div class="input-group">
-            <label>流量/點閱數：</label>
-            <input type="number" id="views" value="10000">
-        </div>
-        <button py-click="calc_income">計算預估分潤</button>
+        <h2>📊 複利收益模擬</h2>
+        <input type="number" id="base-fund" value="1000" placeholder="初始資金">
+        <button py-click="calc_compound">計算一年後預期</button>
     </div>
 </div>
 
-<div id="log-area">>> 系統就緒，請選擇工作流啟動...</div>
+<div id="log-area">>> 歡迎使用 Star-D 自動化系統。首次執行「股市分析」時，系統會下載 yfinance 模組，請稍候...</div>
 
 <script type="py">
+    import yfinance as yf
     from pyscript import document
-    import random
+    from datetime import datetime
 
-    def write_log(msg):
+    def write_log(msg, color="white"):
         log_div = document.querySelector("#log-area")
-        log_div.innerHTML = f"> {msg}<br>" + log_div.innerHTML
+        time_str = datetime.now().strftime("%H:%M:%S")
+        log_div.innerHTML = f"<span style='color:{color}'>[{time_str}] {msg}</span><br>" + log_div.innerHTML
 
-    def generate_video_plan(event):
+    async def analyze_stock(event):
+        ticker_symbol = document.querySelector("#stock-id").value.upper()
+        write_log(f"正在連線 Yahoo Finance 抓取 {ticker_symbol} 數據...", "#38bdf8")
+        
+        try:
+            stock = yf.Ticker(ticker_symbol)
+            data = stock.history(period="1d")
+            if data.empty:
+                write_log(f"❌ 找不到代碼 {ticker_symbol}", "#e94560")
+                return
+
+            price = data['Close'].iloc[-1]
+            high = data['High'].iloc[-1]
+            
+            write_log(f"📊 {ticker_symbol} 當前股價: ${price:.2f}")
+            # 簡單 AI 邏輯判斷
+            advice = "建議買入 (Strong Buy)" if price < high * 0.98 else "建議觀望 (Neutral)"
+            write_log(f"🤖 AI 策略評估：{advice}", "#ffd700")
+        except Exception as e:
+            write_log(f"系統錯誤: {str(e)}", "#e94560")
+
+    def generate_script(event):
         topic = document.querySelector("#video-topic").value
         if not topic:
-            write_log("❌ 請輸入主題關鍵字")
+            write_log("❌ 請輸入影片主題", "#e94560")
             return
-        write_log(f"🚀 正在為『{topic}』生成 AI 腳本...")
-        write_log("✅ 腳本已完成：已傳送至剪映/CapCut 自動化隊列")
+        
+        write_log(f"🧠 AI 正在構思『{topic}』的爆款腳本...", "#38bdf8")
+        # 模擬 AI 生成過程
+        script = f"【腳本生成完成】\n00-05s：開場鉤子（為什麼{topic}正在改變世界？）\n05-30s：乾貨分享（三個你不知道的{topic}秘密）\n30-50s：案例證明\n50-60s：行動呼籲（點贊追蹤 Star-D）"
+        write_log(script, "#34d399")
 
-    def analyze_stock(event):
-        stock = document.querySelector("#stock-id").value
-        write_log(f"🔍 正在抓取 {stock} 即時數據...")
-        # 模擬 AI 分析邏輯
-        trends = ["看漲 🚀", "盤整 ➡️", "回調 📉"]
-        res = random.choice(trends)
-        write_log(f"🤖 AI 分析結果 ({stock})：建議 {res}")
-
-    def calc_income(event):
-        views = float(document.querySelector("#views").value)
-        # 假設每萬次點閱 50 美金的 Python 算法
-        income = (views / 10000) * 50
-        document.querySelector("#daily-profit").innerText = f"{income:,.2f}"
-        write_log(f"💵 根據 {views} 流量計算，預計收益 ${income}")
+    def calc_compound(event):
+        fund = float(document.querySelector("#base-fund").value)
+        # 假設 AI 自動化交易月化 10%
+        final = fund * (1.1 ** 12)
+        write_log(f"📈 模擬 AI 自動化運營 12 個月後，帳戶預估：${final:,.2f}", "#ffd700")
 
 </script>
 
